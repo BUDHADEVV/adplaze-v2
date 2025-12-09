@@ -1,7 +1,6 @@
 'use client'
 
 import { Share2, Heart, Check } from "lucide-react"
-import { Share2, Heart, Check } from "lucide-react"
 import { useState, useEffect } from "react"
 // import { toast } from "react-hot-toast" 
 
