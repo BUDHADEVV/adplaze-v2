@@ -55,8 +55,19 @@ export const adSpace = defineType({
             type: 'geopoint',
         }),
         defineField({
+            name: 'city',
+            title: 'City / Town',
+            type: 'string',
+            validation: (Rule) => Rule.required(),
+        }),
+        defineField({
+            name: 'district',
+            title: 'District / State',
+            type: 'string',
+        }),
+        defineField({
             name: 'address',
-            title: 'Address',
+            title: 'Specific Spot / Landmark',
             type: 'string',
         }),
         defineField({

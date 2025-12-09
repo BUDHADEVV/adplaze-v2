@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { urlFor } from '@/sanity/lib/image'
-import { MapPin, ArrowRight } from 'lucide-react'
+import { MapPin, ArrowRight, Camera } from 'lucide-react'
 
 // Placeholder for Sanity Image Builder if urlFor is not ready/working
 // In a real app we need the image builder configured. 
@@ -17,34 +17,43 @@ interface ListingCardProps {
 
 export function ListingCard({ title, price, type, address, imageUrl, slug }: ListingCardProps) {
     return (
-        <Link href={`/space/${slug}`} className="group block bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all">
-            <div className="relative h-48 w-full bg-gray-200">
+        <Link href={`/space/${slug}`} className="group block bg-white rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-blue-900/10 transition-all duration-300 transform hover:-translate-y-1">
+            <div className="relative aspect-[4/3] w-full bg-gray-100 overflow-hidden">
                 {imageUrl ? (
-                    <img src={imageUrl} alt={title} className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <img src={imageUrl} alt={title} className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500" />
                 ) : (
-                    <div className="flex items-center justify-center h-full text-gray-400">No Image</div>
+                    <div className="flex items-center justify-center h-full text-gray-400 bg-gray-50">
+                        <Camera className="h-8 w-8 opacity-20" />
+                    </div>
                 )}
-                <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-semibold uppercase tracking-wide text-gray-700">
-                    {type.replace('_', ' ')}
+
+                {/* Floating Badge */}
+                <div className="absolute top-4 left-4">
+                    <div className="bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-gray-900 shadow-sm border border-white/20">
+                        {type.replace('_', ' ')}
+                    </div>
+                </div>
+
+                {/* Price Tag Overlay on bottom right */}
+                <div className="absolute bottom-4 right-4 bg-gray-900/90 backdrop-blur-md text-white px-3 py-1.5 rounded-xl text-sm font-bold shadow-lg">
+                    ₹{price.toLocaleString()}<span className="text-xs font-normal text-gray-300">/day</span>
                 </div>
             </div>
 
-            <div className="p-4">
-                <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 truncate">{title}</h3>
+            <div className="p-5">
+                <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 truncate tracking-tight">{title}</h3>
 
-                <div className="flex items-center gap-1.5 mt-2 text-sm text-gray-500">
-                    <MapPin className="h-4 w-4" />
+                <div className="flex items-center gap-2 mt-2 text-sm text-gray-500 font-medium">
+                    <MapPin className="h-3.5 w-3.5 text-blue-500" />
                     <span className="truncate">{address || 'Location varies'}</span>
                 </div>
 
-                <div className="mt-4 flex items-center justify-between">
-                    <div className="flex flex-col">
-                        <span className="text-xs text-gray-400">From</span>
-                        <span className="text-lg font-bold text-gray-900">₹{price.toLocaleString()}</span>
-                        <span className="text-xs text-gray-400">/day</span>
-                    </div>
-                    <div className="h-8 w-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                        <ArrowRight className="h-4 w-4" />
+                <div className="mt-4 pt-4 border-t border-gray-50 flex items-center justify-between">
+                    <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">
+                        INSTANT BOOK
+                    </span>
+                    <div className="flex items-center gap-1 text-xs text-gray-400 font-medium group-hover:translate-x-1 transition-transform">
+                        View Details <ArrowRight className="h-3 w-3" />
                     </div>
                 </div>
             </div>

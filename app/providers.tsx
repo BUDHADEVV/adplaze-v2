@@ -3,9 +3,9 @@
 import { SessionProvider } from "next-auth/react"
 import { CartProvider } from "@/context/CartContext"
 
-export function Providers({ children }: { children: React.ReactNode }) {
+export function Providers({ children, session }: { children: React.ReactNode, session?: any }) {
     return (
-        <SessionProvider>
+        <SessionProvider session={session}>
             <CartProvider>
                 {children}
             </CartProvider>

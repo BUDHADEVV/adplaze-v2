@@ -71,9 +71,11 @@ export async function createAdSpace(prevState: any, formData: FormData) {
     const type = formData.get('type') as string
     const price = Number(formData.get('price'))
     const address = formData.get('address') as string
+    const city = formData.get('city') as string
+    const district = formData.get('district') as string
     const ownerId = formData.get('ownerId') as string
 
-    if (!title || !price || !ownerId) return { success: false, message: "Missing required fields" }
+    if (!title || !price || !ownerId || !city) return { success: false, message: "Missing required fields" }
 
     try {
         // Generate a slug
@@ -105,6 +107,8 @@ export async function createAdSpace(prevState: any, formData: FormData) {
             type,
             price,
             address,
+            city,
+            district,
             owner: {
                 _type: 'reference',
                 _ref: ownerId

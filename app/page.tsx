@@ -24,30 +24,6 @@ export default async function Home() {
     <div className="min-h-screen bg-slate-50 pb-20 md:pb-0">
       <Navbar />
 
-      {/* 1. Category Navigation (Amazon Style) */}
-      <div className="bg-white border-b shadow-sm sticky top-20 z-40 hidden md:block overflow-x-auto">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between py-3">
-            <div className="flex gap-8">
-              {[
-                { name: 'All', icon: Layout },
-                { name: 'Billboard', icon: Layout },
-                { name: 'Digital Screens', icon: Monitor },
-                { name: 'Transit Media', icon: Bus },
-                { name: 'Street Furniture', icon: MapPin },
-                { name: 'Airport Ads', icon: MapPin },
-              ].map((cat) => (
-                <div key={cat.name} className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-blue-600 cursor-pointer transition-colors whitespace-nowrap">
-                  {cat.name}
-                </div>
-              ))}
-            </div>
-            <div className="text-sm font-bold text-blue-600 hover:underline cursor-pointer">
-              View All Categories
-            </div>
-          </div>
-        </div>
-      </div>
 
       <div className="max-w-[1440px] mx-auto">
 
@@ -188,30 +164,6 @@ export default async function Home() {
       <div className="mt-20">
         <HowItWorks />
         <Footer />
-      </div>
-
-      {/* Bottom Nav (Mobile Only) */}
-      <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 md:hidden flex justify-around py-3 z-50 shadow-[0_-5px_10px_rgba(0,0,0,0.05)]">
-        <Link href="/" className="flex flex-col items-center gap-1 text-blue-600">
-          <Layout className="h-5 w-5" />
-          <span className="text-[10px] font-medium">Home</span>
-        </Link>
-        <div className="flex flex-col items-center gap-1 text-gray-400">
-          <Monitor className="h-5 w-5" />
-          <span className="text-[10px] font-medium">Play</span>
-        </div>
-        <Link href="/explore" className="flex flex-col items-center gap-1 text-gray-400">
-          <Layout className="h-5 w-5" />
-          <span className="text-[10px] font-medium">Explore</span>
-        </Link>
-        <div className="flex flex-col items-center gap-1 text-gray-400">
-          <User className="h-5 w-5" />
-          <span className="text-[10px] font-medium">Account</span>
-        </div>
-        <Link href="/cart" className="flex flex-col items-center gap-1 text-gray-400">
-          <ShoppingBag className="h-5 w-5" />
-          <span className="text-[10px] font-medium">Cart</span>
-        </Link>
       </div>
     </div>
   )

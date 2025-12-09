@@ -3,10 +3,12 @@ import { authOptions } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { client } from "@/sanity/lib/client"
 import { groq } from "next-sanity"
-import Link from "next/link"
 import { Navbar } from "@/components/Navbar"
-import { Plus, Calendar, Settings, MapPin, Users } from "lucide-react"
+import { Users } from "lucide-react"
 import { BookingList } from "../admin/BookingList"
+import { AgencySpaceList } from "./AgencySpaceList" // Client Component for Space List + Add Button
+
+export const dynamic = 'force-dynamic'
 
 export default async function AgencyDashboard() {
     const session = await getServerSession(authOptions)
@@ -18,6 +20,9 @@ export default async function AgencyDashboard() {
     }
 
     const email = session?.user?.email
+
+    // Fetch the User ID for this agency
+    const userDoc = email ? await client.fetch(groq`*[_type == "user" && email == $email][0]{_id}`, { email }) : null
 
     // Fetch spaces owned by this agency
     const spaces = email ? await client.fetch(groq`
@@ -58,40 +63,10 @@ export default async function AgencyDashboard() {
 
                     {/* Main Content: Spaces (2/3) */}
                     <div className="lg:col-span-2">
-                        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                            <MapPin className="h-5 w-5 text-gray-500" /> Your Ad Spaces
-                        </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {spaces.length > 0 ? spaces.map((space: any) => (
-                                <div key={space._id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                                    <div className="h-48 bg-gray-100 relative">
-                                        {space.imageUrl && (
-                                            <img src={space.imageUrl} alt={space.title} className="w-full h-full object-cover" />
-                                        )}
-                                        <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                                            {space.type?.replace('_', ' ')}
-                                        </div>
-                                    </div>
-                                    <div className="p-5">
-                                        <h3 className="font-bold text-lg text-gray-900 mb-2 truncate">{space.title}</h3>
-                                        <div className="flex gap-2 mt-4">
-                                            <Link
-                                                href={`/dashboard/agency/${space.slug.current}`}
-                                                className="flex-1 flex items-center justify-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-100 font-medium text-sm transition-colors"
-                                            >
-                                                <Calendar className="h-4 w-4" />
-                                                Availability
-                                            </Link>
-                                        </div>
-                                    </div>
-                                </div>
-                            )) : (
-                                <div className="col-span-2 text-center py-20 bg-white rounded-xl border border-dashed border-gray-300">
-                                    <p className="text-gray-500 mb-4">You haven't listed any spaces yet.</p>
-                                    <p className="text-sm text-gray-400">Contact Admin to get listed.</p>
-                                </div>
-                            )}
-                        </div>
+                        {/* We need the User's SANITY ID to link the new space to them. 
+                            The session only has email. We need to fetch the _id. 
+                        */}
+                        <AgencySpaceList spaces={spaces} userEmail={email || ''} userId={userDoc?._id || ''} />
                     </div>
 
                     {/* Sidebar: Bookings (1/3) */}

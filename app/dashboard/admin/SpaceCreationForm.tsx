@@ -43,14 +43,28 @@ export function SpaceCreationForm({ agencies }: { agencies: any[] }) {
                 </div>
             </div>
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700">Location / Address</label>
-                <div className="mt-1 relative rounded-md shadow-sm">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <MapPin className="h-4 w-4 text-gray-400" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Specific Spot / Landmark</label>
+                    <div className="mt-1 relative rounded-md shadow-sm">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <MapPin className="h-4 w-4 text-gray-400" />
+                        </div>
+                        <input name="address" type="text" className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="e.g. Opposite Lulu Mall" />
                     </div>
-                    <input name="address" type="text" className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="123 Main St, City" />
                 </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">City / Town</label>
+                    <input name="city" type="text" required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="e.g. Kochi" />
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">District / State</label>
+                    <input name="district" type="text" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="e.g. Ernakulam" />
+                </div>
+                {/* Empty col for spacing or future field */}
             </div>
 
             <div>
