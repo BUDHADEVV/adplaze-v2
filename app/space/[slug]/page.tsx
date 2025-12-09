@@ -2,7 +2,9 @@ import { client } from "@/sanity/lib/client"
 import { SPACE_BY_SLUG_QUERY } from "@/sanity/lib/queries"
 import { Navbar } from "@/components/Navbar"
 import { BookingWidget } from "@/components/BookingWidget"
-import { MapPin, Target, Info } from "lucide-react"
+import { SpaceActions } from "@/components/SpaceActions"
+import { ReviewsModule } from "@/components/ReviewsModule"
+import { MapPin, Target, Info, Share2, Heart, Star } from "lucide-react"
 
 export default async function SpaceDetailsPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params
@@ -16,13 +18,23 @@ export default async function SpaceDetailsPage({ params }: { params: Promise<{ s
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
                 {/* Header Info */}
-                <div className="mb-8">
-                    <span className="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
-                        {space.type}
-                    </span>
-                    <h1 className="text-4xl font-extrabold text-gray-900 mt-4 mb-2">{space.title}</h1>
-                    <div className="flex items-center text-gray-500 text-lg">
-                        <MapPin className="h-5 w-5 mr-1 text-gray-400" /> {space.address}
+                <div className="mb-8 flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                    <div className="flex-1">
+                        <span className="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
+                            {space.type}
+                        </span>
+                        <h1 className="text-3xl md:text-5xl font-black text-gray-900 mt-4 mb-2 tracking-tight">{space.title}</h1>
+                        <div className="flex items-center text-gray-500 text-lg">
+                            <MapPin className="h-5 w-5 mr-1 text-gray-400" /> {space.address}
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                        <SpaceActions
+                            spaceId={space._id}
+                            title={space.title}
+                            url={`https://adplaze.com/space/${space.slug.current || space.slug}`} // Mock domain for now
+                        />
                     </div>
                 </div>
 
@@ -69,6 +81,9 @@ export default async function SpaceDetailsPage({ params }: { params: Promise<{ s
                                 </div>
                             </div>
                         </div>
+
+                        {/* REVIEWS SECTION */}
+                        <ReviewsModule />
                     </div>
 
                     {/* RIGHT COLUMN: Booking Widget (1/3) sticky */}
