@@ -81,7 +81,10 @@ export function Navbar() {
                                 <div className="flex items-center gap-3">
                                     <div className="text-right hidden sm:block">
                                         <div className="text-xs font-bold text-gray-900">{session.user?.name}</div>
-                                        <div className="text-[10px] text-gray-500 uppercase tracking-wider">{isDashboard ? 'Dashboard Mode' : 'Advertiser'}</div>
+                                        <div className="text-[10px] text-gray-500 uppercase tracking-wider">
+                                            {/* @ts-ignore */}
+                                            {isDashboard ? 'Dashboard Mode' : (session.user?.role === 'agency' ? 'Space Owner' : session.user?.role === 'admin' ? 'Admin' : 'Advertiser')}
+                                        </div>
                                     </div>
                                     <div className="h-10 w-10 bg-indigo-50 border border-indigo-100 rounded-xl flex items-center justify-center text-indigo-700 font-bold cursor-pointer hover:bg-indigo-100 transition-colors">
                                         {session.user?.name?.[0]}

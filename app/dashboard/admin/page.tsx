@@ -10,6 +10,8 @@ import { SpaceList } from "./SpaceList"
 import { BookingList } from "./BookingList"
 import { MapPin } from "lucide-react"
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminDashboard() {
     const bookings = await client.fetch(groq`*[_type == "booking"] | order(_createdAt desc){
         _id, status, startDate, endDate, totalPrice, _createdAt,

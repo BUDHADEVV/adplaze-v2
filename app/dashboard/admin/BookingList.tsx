@@ -160,7 +160,7 @@ export function BookingList({ bookings }: { bookings: any[] }) {
                                 Close
                             </button>
 
-                            {selectedBooking.status === 'pending' && (
+                            {(selectedBooking.status === 'pending' || selectedBooking.status === 'confirmed') && (
                                 <BookingActions booking={selectedBooking} onClose={() => setSelectedBooking(null)} />
                             )}
                         </div>
@@ -190,22 +190,40 @@ function BookingActions({ booking, onClose }: { booking: any, onClose: () => voi
             <input type="hidden" name="startDate" value={booking.startDate} />
             <input type="hidden" name="endDate" value={booking.endDate} />
 
-            <button
-                type="submit"
-                name="action"
-                value="reject"
-                className="bg-red-50 text-red-600 border border-red-200 font-bold py-2 px-4 rounded-lg hover:bg-red-100 text-sm"
-            >
-                Reject
-            </button>
-            <button
-                type="submit"
-                name="action"
-                value="confirm"
-                className="bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700 shadow-sm text-sm"
-            >
-                Confirm Booking
-            </button>
+            {/* Cancel Button (Admin Only - Confirmed Bookings) */}
+            {state?.success && <div className="text-xs text-green-600 font-bold">Done!</div>}
+
+            {booking.status === 'confirmed' && (
+                <button
+                    type="submit"
+                    name="action"
+                    value="cancel"
+                    className="bg-red-50 text-red-600 border border-red-200 font-bold py-2 px-4 rounded-lg hover:bg-red-100 text-sm ml-auto"
+                >
+                    Cancel & Refund
+                </button>
+            )}
+
+            {booking.status === 'pending' && (
+                <>
+                    <button
+                        type="submit"
+                        name="action"
+                        value="reject"
+                        className="bg-red-50 text-red-600 border border-red-200 font-bold py-2 px-4 rounded-lg hover:bg-red-100 text-sm"
+                    >
+                        Reject
+                    </button>
+                    <button
+                        type="submit"
+                        name="action"
+                        value="confirm"
+                        className="bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700 shadow-sm text-sm"
+                    >
+                        Confirm Booking
+                    </button>
+                </>
+            )}
         </form>
     )
 }

@@ -75,6 +75,9 @@ export function SpaceList({ spaces }: { spaces: any[] }) {
 function DeleteButton({ spaceId }: { spaceId: string }) {
     const [state, formAction] = useActionState(deleteAdSpace, { success: false, message: '' })
 
+    // Optional: Show visual error if needed. 
+    // Using a simple conditional text for now to keep UI clean but informative.
+
     return (
         <form action={formAction} className="inline-block" onSubmit={(e) => {
             if (!confirm("Are you sure you want to delete this space?")) {
@@ -82,8 +85,13 @@ function DeleteButton({ spaceId }: { spaceId: string }) {
             }
         }}>
             <input type="hidden" name="spaceId" value={spaceId} />
-            <button type="submit" className="text-gray-400 hover:text-red-600 transition-colors p-2" title="Delete Space">
+            <button type="submit" className="text-gray-400 hover:text-red-600 transition-colors p-2 relative group" title="Delete Space">
                 <Trash2 className="h-4 w-4" />
+                {!state.success && state.message && (
+                    <div className="absolute right-0 bottom-full mb-2 w-48 p-2 bg-red-800 text-white text-xs rounded shadow-lg z-50 pointer-events-none">
+                        {state.message}
+                    </div>
+                )}
             </button>
         </form>
     )

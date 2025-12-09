@@ -113,21 +113,6 @@ export async function createAdSpace(prevState: any, formData: FormData) {
             description: "Newly listed space. Add description and images in Studio."
         })
 
-        await writeClient.create({
-            _type: 'adSpace',
-            title,
-            slug: { _type: 'slug', current: slug },
-            type,
-            price,
-            address,
-            owner: {
-                _type: 'reference',
-                _ref: ownerId
-            },
-            images: images,
-            description: "Newly listed space. Add description and images in Studio."
-        })
-
         revalidatePath('/dashboard/admin')
         revalidatePath('/dashboard/agency') // Update agency dashboard too
         return { success: true, message: "Space listed and assigned!" }
@@ -152,6 +137,7 @@ export async function updateAdSpace(prevState: any, formData: FormData) {
             .commit()
 
         revalidatePath('/dashboard/admin')
+        revalidatePath('/dashboard/agency')
         return { success: true, message: "Space updated successfully" }
     } catch (e: any) {
         console.error("Update Error:", e)
@@ -164,10 +150,29 @@ export async function deleteAdSpace(prevState: any, formData: FormData) {
 
     if (!spaceId) return { success: false, message: "Missing space ID" }
 
+    // Debugging: Check if token is present
+    if (!process.env.SANITY_API_TOKEN) {
+        console.error("CRITICAL: SANITY_API_TOKEN is missing in environment variables.")
+        return { success: false, message: "Server Error: Missing API Token for Write Permissions. Please verify Vercel Environment Variables." }
+    }
+
     try {
+        // 1. Delete all bookings referencing this space (Cascade Delete)
+        // We first fetch them to get their IDs
+        const referencingBookings = await writeClient.fetch(`*[_type == "booking" && space._ref == $spaceId]._id`, { spaceId })
+
+        if (referencingBookings.length > 0) {
+            const tx = writeClient.transaction()
+            referencingBookings.forEach((id: string) => tx.delete(id))
+            await tx.commit()
+        }
+
+        // 2. Now delete the space
         await writeClient.delete(spaceId)
+
         revalidatePath('/dashboard/admin')
-        return { success: true, message: "Space deleted successfully" }
+        revalidatePath('/dashboard/agency')
+        return { success: true, message: "Space and associated bookings deleted successfully" }
     } catch (e: any) {
         console.error("Delete Error:", e)
         return { success: false, message: `Failed to delete: ${e.message}` }
@@ -176,7 +181,7 @@ export async function deleteAdSpace(prevState: any, formData: FormData) {
 
 export async function manageBooking(prevState: any, formData: FormData) {
     const bookingId = formData.get('bookingId') as string
-    const action = formData.get('action') as string // 'confirm' or 'reject'
+    const action = formData.get('action') as string // 'confirm' or 'reject' or 'cancel'
     const spaceId = formData.get('spaceId') as string
     const startDate = formData.get('startDate') as string
     const endDate = formData.get('endDate') as string
@@ -184,14 +189,18 @@ export async function manageBooking(prevState: any, formData: FormData) {
     if (!bookingId || !action) return { success: false, message: "Missing fields" }
 
     try {
-        const status = action === 'confirm' ? 'confirmed' : 'rejected'
+        let status = ''
+        if (action === 'confirm') status = 'confirmed'
+        else if (action === 'reject') status = 'rejected'
+        else if (action === 'cancel') status = 'cancelled'
+
+        if (!status) return { success: false, message: "Invalid action" }
 
         // 1. Update Booking Status
         await writeClient.patch(bookingId).set({ status }).commit()
 
-        // 2. If Confirmed, Block Dates on Space
-        if (action === 'confirm' && spaceId && startDate && endDate) {
-            // Generate array of dates between start and end
+        // 2. Logic for Blocking/Unblocking Dates
+        if (spaceId && startDate && endDate) {
             const dates: string[] = []
             let current = new Date(startDate)
             const end = new Date(endDate)
@@ -201,11 +210,26 @@ export async function manageBooking(prevState: any, formData: FormData) {
                 current.setDate(current.getDate() + 1)
             }
 
-            // Append these dates to availability array
-            await writeClient.patch(spaceId)
-                .setIfMissing({ availability: [] })
-                .append('availability', dates)
-                .commit()
+            // If Confirming: ADD dates to availability
+            if (action === 'confirm') {
+                await writeClient.patch(spaceId)
+                    .setIfMissing({ availability: [] })
+                    .append('availability', dates)
+                    .commit()
+            }
+            // If Cancelling: REMOVE dates from availability
+            else if (action === 'cancel') {
+                // Fetch current availability
+                const space = await writeClient.fetch(`*[_id == $id][0]{availability}`, { id: spaceId })
+                const currentAvailability = space?.availability || []
+
+                // Filter out the booking dates
+                const newAvailability = currentAvailability.filter((d: string) => !dates.includes(d))
+
+                await writeClient.patch(spaceId)
+                    .set({ availability: newAvailability })
+                    .commit()
+            }
         }
 
         revalidatePath('/dashboard/admin')
